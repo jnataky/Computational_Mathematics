@@ -215,6 +215,10 @@ mendel <- 17
 
 total <- CombN(4, 3)*CombN(104, 3)*CombN(17, 3)
 
+# Music can play at any order: permuting them
+
+total <- total*factorial(9)
+
 total <- format(total, scientific = TRUE, digits = 3)
 
 paste0("There are ", total, " different schedules possible")
@@ -319,21 +323,23 @@ Express your answer as a fraction or a decimal number rounded to four decimal pl
 syc <- 5
 cyp <- 5
 
+choose(2,1)*choose(5,5)*choose(5,0)/choose(10,5)
+
 # Possible outcome: planting trees at any order
 
-n<- 2 # SSSSSCCCCC CCCCCSSSSS
+n<- 5 # number of trees
 
-poss <- factorial(syc+cyp)  # permutation of all trees
+poss <- CombN(syc+cyp, n) 
 
+# We need to choose one in a group of 2 types of trees
+# Choose 5 in a group of 5
+# Multiply by the number of trees
 
-prob = n/poss
+n_poss <- CombN(2, 1)*CombN(5, 5)*CombN(5, 0)
 
-total <- format(prob, scientific = TRUE, digits = 3)
+total_poss <- round(n_poss / poss, 4)
 
-paste0("The probability is ", total)
-
-
-paste0("Rounding up, the probability is ", round(prob, 4))
+paste0("The probability is ", total_poss)
 
 
 ```
