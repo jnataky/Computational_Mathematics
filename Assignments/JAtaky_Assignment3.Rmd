@@ -1,0 +1,265 @@
+---
+title: "Fundamentals of Computational Mathematics - Homework 3"
+author: "Jered Ataky"
+date: "2/13/2021"
+output:
+  pdf_document: default
+  html_document:
+    number_sections: yes
+  openintro::lab_report: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## PROBLEM SET 1
+
+### (1) The rank of matrix A
+
+$$
+\begin{gather*}
+I\ am\ going\ to\ use\ RREF\ to\ find\ the\ rank\ of\ A\\
+\\
+A\ =\begin{bmatrix}
+1 & 2 & 3 & 4\\
+-1 & 0 & 1 & 3\\
+0 & 1 & -2 & 1\\
+5 & 4 & -2 & -3
+\end{bmatrix} R_{2}\rightarrow R_{3} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+=\begin{bmatrix}
+1 & 2 & 3 & 4\\
+0 & 1 & -2 & 1\\
+-1 & 0 & 1 & 3\\
+5 & 4 & -2 & -3
+\end{bmatrix} R_{3} =R_{1} \ +\ R_{3} ;\ R_{4} \ =-5R_{1} \ +\ R_{4} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+\ \ \ =\begin{bmatrix}
+1 & 2 & 3 & 4\\
+0 & 1 & -2 & 1\\
+0 & 2 & 4 & 7\\
+0 & 6 & -17 & -23
+\end{bmatrix} R_{3} =-2R_{2} +R_{3} ;\ R_{4} =-6R_{2} +R_{4} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+\\
+=\begin{bmatrix}
+1 & 2 & 3 & 4\\
+0 & 1 & -2 & 1\\
+0 & 0 & 8 & 5\\
+0 & 0 & -5 & -29
+\end{bmatrix} R_{3} =\frac{1}{8} R_{3} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+=\begin{bmatrix}
+1 & 2 & 3 & 4\\
+0 & 1 & -2 & 1\\
+0 & 0 & 1 & \frac{5}{8}\\
+0 & 0 & -5 & -29
+\end{bmatrix} R_{4} =5R_{3} +R_{4} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+=\begin{bmatrix}
+1 & 2 & 3 & 4\\
+0 & 1 & -2 & 1\\
+0 & 0 & 1 & \frac{5}{8}\\
+0 & 0 & 0 & -\frac{207}{8}
+\end{bmatrix} R_{4} =-\frac{8}{207} R_{4} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+\\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\begin{bmatrix}
+1 & 2 & 3 & 4\\
+0 & 1 & -2 & 1\\
+0 & 0 & 1 & \frac{5}{8}\\
+0 & 0 & 0 & 1
+\end{bmatrix} \ R_{3} =-\frac{5}{8} R_{4} \ +R_{3} ;\ R_{2} =-R_{4} +R_{2} ;\ R_{1} =-4R_{4} \ +R_{1} \ \ \ \ \ \ \ \ \ \ \\
+\\
+\\
+=\begin{bmatrix}
+1 & 2 & 3 & 0\\
+0 & 1 & -2 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{bmatrix} \ R_{2} =2R_{3} +R_{2} ;\ R_{1} =-3R_{3} +R_{1} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+=\begin{bmatrix}
+1 & 2 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{bmatrix} \ R_{1} =- 2R_{1} +R_{1} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+=\begin{bmatrix}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{bmatrix} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+As\ we\ can\ see\ the\ RREF\ of\ A\ with\ leading\ 1s,\ rank( A) \ =\ 4\\
+\\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+\end{gather*}
+
+$$
+
+
+Let verify the above solution using rankmatrix
+
+```{r}
+library(Matrix)
+
+A <- matrix(c(1,-1,0,5, 2,0,1,4, 3,1,-2,-2, 4,3,1,-3), nrow = 4)
+R <- rankMatrix(A)
+
+message("The rank of A is ", R)
+
+
+```
+
+
+
+### (2) Maximum and minimum of an mXn matrix
+
+Given an mXn matrix where m > n, the maximum rank can be **n** 
+since the rank has to be no greater than the smaller of the row or column
+dimension.
+
+Assuming that the matrix is non-zero, the minimum rank can be **1**
+since the rank of a matrix would be zero only if the matrix had no elements.
+
+
+### (3) Rank of matrix B
+
+$$
+\begin{gather*}
+B=\begin{bmatrix}
+1 & 2 & 1\\
+3 & 6 & 3\\
+2 & 4 & 2
+\end{bmatrix}\\
+\\
+Looking\ at\ matrix\ B,\ R_{2} \ =\ 3R_{1} \ and\ R_{3} \ =\ 2R_{1} ,\\
+all\ rows\ vectors\ are\ multiple\ of\ the\ same\ nonzero\ vector\ and\ det( B) \ =\ 0.\\
+That's\ it,\ there\ is\ one\ and\ only\ one\ linearly\ independent\ row.\\
+\\
+Therefore,\ rank( B) \ =\ 1.\\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+\end{gather*}
+
+$$
+
+
+
+Let verify the above solution using rankmatrix
+
+```{r}
+
+B <- matrix(c(1,3,2, 2,6,4, 1,3,2), nrow = 3)
+R <- rankMatrix(B)
+
+message("The rank of B is ", R)
+
+
+```
+
+
+## PROBLEM SET 2
+
+**Eigenvalues and Eigenvectors**
+
+
+$$
+\begin{gather*}
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+\\
+\\
+\\
+A\ =\begin{bmatrix}
+1 & 2 & 3\\
+0 & 4 & 5\\
+0 & 0 & 6
+\end{bmatrix}\\
+\\
+1.\ Eigenvalues\\
+\\
+The\ polynomial\ characteristic\ is\ given\ by:\\
+\\
+P( \lambda ) \ =det( A-\lambda I) \ =\ det\left(\begin{bmatrix}
+1-\lambda  & 2 & 3\\
+0 & 4-\lambda  & 5\\
+0 & 0 & 6-\lambda 
+\end{bmatrix}\right)\\
+\\
+using\ column\ 1\ to\ calculate\ the\ determinant:\\
+\\
+det\left(\begin{bmatrix}
+1-\lambda  & 2 & 3\\
+0 & 4-\lambda  & 5\\
+0 & 0 & 6-\lambda 
+\end{bmatrix}\right) \ =( 1-\lambda )\begin{vmatrix}
+4-\lambda  & 5\\
+0 & 6-\lambda 
+\end{vmatrix}\\
+\\
+=\ ( 1-\lambda )( 4-\lambda )( 6-\lambda )\\
+\\
+P( \lambda ) \ =\ 0\ \Longrightarrow \ \lambda =1,\ \lambda =4,\ \lambda =6\\
+\\
+The\ eigenvalues\ are\ \lambda =1,\ 4,\ 6\ with\ algebraic\ multiplicities\ \\
+\alpha ( 1) \ =\ 1,\ \alpha ( 4) \ =\ 1,\ and\ \alpha ( 6) \ =\ 1.\\
+\\
+2.\ Eigenvectors\\
+\\
+For\ \lambda =1:\\
+\\
+A-I\ =\ \begin{bmatrix}
+0 & 2 & 3\\
+0 & 3 & 5\\
+0 & 0 & 5
+\end{bmatrix}\rightarrow \ v_{3} =v_{2} =0\ and\ v_{1} \ =\ v_{1}\\
+\\
+\Longrightarrow \epsilon ( 1) \ =\left\{\begin{bmatrix}
+1\\
+0\\
+0
+\end{bmatrix}\right)\\
+\\
+For\ \lambda =4:\\
+\\
+A-4I\ =\ \begin{bmatrix}
+-3 & 2 & 3\\
+0 & 0 & 5\\
+0 & 0 & 2
+\end{bmatrix}\rightarrow \ v_{3} =0\ and\ -3v_{1} \ +\ 2v_{2} \ =0\\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \rightarrow \ v_{1} \ =\ \frac{2}{3} v_{2} \ \ \ \ \ \ \ \\
+\\
+\ \ \ \ \Longrightarrow \epsilon ( 4) \ =\left\{\begin{bmatrix}
+2\\
+3\\
+0
+\end{bmatrix}\right\}\\
+\\
+For\ \lambda =6:\\
+\\
+A-6I\ =\begin{bmatrix}
+-5 & 2 & 3\\
+0 & -2 & 5\\
+0 & 0 & 0
+\end{bmatrix}\rightarrow v_{2} =\frac{5}{2} v_{3} \ and\ 5v_{1} \ =\ 8v_{3}\\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \rightarrow \ v_{1} =\frac{8}{5} v_{3} \ and\ v_{2} =\frac{5}{2} v_{3}\\
+\\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \Longrightarrow \ \epsilon ( 6) \ =\left\{\begin{bmatrix}
+16\\
+25\\
+10
+\end{bmatrix}\right\}\\
+\\
+The\ eigenvectors\ yield\ the\ geometric\ multiplicities\ \gamma ( 1) \ =1,\ \gamma ( 4) \ =1,\ \gamma ( 6) \ =1\\
+\\
+\ \ \ \ \ \\
+\\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+\end{gather*}
+
+
+$$

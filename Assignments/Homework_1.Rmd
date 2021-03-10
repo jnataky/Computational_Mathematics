@@ -1,0 +1,120 @@
+---
+title: "Fundamentals of Computational Mathematics - Homework 1"
+author: "Jered Ataky"
+date: "2/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem
+
+**Image transformation:**
+
+Build the first letters for both your first and last name using point plots in R. 
+
+Then, write R code that will left multiply (%>%) a square matrix (x) against each of the vectors of points (y).
+
+Use a loop that changes the transformation matrix incrementally to demonstrate 1) shear, 2) scaling, 3)  rotation , and 4) projection in animated fashion.  
+
+Hint:  Use x11() to open a new plotting window in R.
+
+
+
+## Solution
+
+**I am going to construct "A N" which is my last and middle name initial**
+
+
+```{r}
+
+# Building the letters A and N
+
+x=c(seq(-1.5,-1.0, length.out = 500),seq(-1.25,-0.75,length.out=1000), seq(-0.5, -1, length.out = 500), 
+    rep(0.5, 500), seq(0.5, 1.5, length.out = 1000), rep(1.5, 500))
+
+y=c(seq(-1,1,length.out=500),rep(-0.2,1000), seq(-1,1,length.out=500), 
+    seq(-1, 1, length.out = 500), seq(1, -1, length.out = 1000), seq(-1, 1, length.out = 500))
+
+z=rbind(x,y)
+
+plot(y~x, xlim=c(-3,3), ylim=c(-3,3))
+
+```
+
+
+
+```{r}
+
+library(animation)
+
+# Animating the initials 
+
+
+myani = ani.record(reset = TRUE, replay.cur = FALSE)
+
+a = diag(2)
+
+x11()
+
+for (i in seq(-3,3, length.out = 100)) {
+  a[1,1] = i
+  newmat = apply(z, 2, function(x) a%*%x)
+  plot(newmat[2, ]~newmat[1, ], xlim =c(-3,3), ylim = c(-3,3))
+  ani.record()
+  
+}
+
+
+a = diag(2)
+
+for (i in seq(-3,3, length.out = 100)) {
+  a[2,1] = i
+  newmat = apply(z, 2, function(x) a%*%x)
+  plot(newmat[2, ]~newmat[1, ], xlim =c(-3,3), ylim = c(-3,3))
+  ani.record()
+  
+}
+
+
+a = diag(2)
+
+for (i in seq(-3,3, length.out = 100)) {
+  a[1,2] = i
+  newmat = apply(z, 2, function(x) a%*%x)
+  plot(newmat[2, ]~newmat[1, ], xlim =c(-3,3), ylim = c(-3,3))
+  ani.record()
+  
+}
+
+
+a = diag(2)
+
+for (i in seq(-3,3, length.out = 100)) {
+  a[2,2] = i
+  newmat = apply(z, 2, function(x) a%*%x)
+  plot(newmat[2, ]~newmat[1, ], xlim =c(-3,3), ylim = c(-3,3))
+  ani.record()
+  
+}
+
+
+myf = function(x)(matrix(c(cos(x), sin(x), -sin(x), cos(x)), byrow = TRUE, nrow = 2))
+
+for (i in seq(0, 20, length.out = 100)) {
+  
+  a = myf(i)
+  newmat = apply(z, 2, function(x) a%*%x)
+  plot(newmat[2, ]~ newmat[1, ], xlim = c(-3,3), ylim = c(-3,3))
+  ani.record()
+  
+  
+}
+
+```
+
+
+
+
