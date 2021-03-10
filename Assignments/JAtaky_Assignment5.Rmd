@@ -1,0 +1,367 @@
+---
+title: "Fundamentals of Computational Mathematics - Homework 5"
+author: "Jered Ataky"
+date: "2/28/2021"
+output:
+  pdf_document: default
+  html_document:
+    number_sections: yes
+  openintro::lab_report: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1: Bayesian
+
+
+```{r}
+
+sens <- 0.96
+spec <- 0.98
+
+p_rate <- 0.001
+
+p_desease <- round(((sens * p_rate) / ((sens * p_rate) + (1 - spec)*(1 - p_rate))), 4)
+
+
+paste0("The probability that an individual who is reported as positive by the new test actually has disease is ", p_desease)
+
+median_cost <- 100000
+test_cost <- 1000
+total_ind_treated <- 100000
+
+# First year cost for treating 100,000 individuals:
+# Considering that each positive individual (individual to be treated) did the test
+# And each individual needs to pay $100,000 for the treatment 
+
+total_test_cost <- (median_cost + test_cost) * total_ind_treated # But some patients would be false positive (sens = 96%                                                                     not 100%)
+
+paste0("The total cost will be $", total_test_cost)
+
+```
+
+
+## Problem 2: Binomial
+
+```{r}
+
+# X = number of inspection
+p <- 0.05
+n <- 24
+
+a <- round(dbinom(2, 24, 0.05), 4)
+
+paste0("P(X = 2) = ", a)
+
+
+b <- round(1 - pbinom(1, 24, 0.05), 4)
+
+paste0("Probabibility after 24 months you receive 2 or more inspections is ", b)
+
+
+
+c <- round(pbinom(1, 24, 0.05), 4)
+
+paste0("Probabibility after 24 months you receive fewer than 2 is ", c)
+
+
+# Expected value
+
+u <- n*p
+paste0("The expected value is ", u)
+
+# Standard deviation
+
+s <- round(sqrt(n*p*(1-p)), 4)
+paste0("The standard deviation is ", s)
+
+```
+
+
+## Problem 3: Poisson distribution
+
+```{r}
+
+lambda<- 10
+t <- 1
+
+# Exactly 3 per hour
+
+a <- dpois(3, 10)
+paste0("P(X = 2) = ", a)
+
+b <- 1 - ppois(10, 10)
+b
+
+# Expected value and std
+
+t <- 8
+
+u <- lambda*t
+paste0("We will expect ", u, " patients to arrive in 8 hours")
+
+s <- round(sqrt(lambda*t), 2)
+paste0("The standard deviation for patients to arrive in 8 hours is ", s)
+
+```
+
+Let now consider each family provider clinic is open 8hrs a day:
+
+From the above calculation, the clinic expects 80 patients a day.
+
+With 3 family practice providers that can see 24 templated patients each day,
+the total number of patients seen would be 72 which is less than the expected
+number of patients per day. The demand is way more than the supply,
+thus, the percent utilization > 100%.
+
+As the clinic can only see 90% of patients that arrive,
+I would recommend the clinic to hire another family providers. With this, they
+will serve all the patients and reduce the percent utilization as well.
+
+If the clinic can't afford t hire another family provider,
+the clinic could to start introducing an "appointment only" visit. 
+But With this, the clinic won't be able to serve
+all the patients and the receptionists will get busier scheduling appointment.
+The clinic might need to hire more receptionists to handle phone calls
+which cost in the end can be as same as hiring another family provider.
+
+
+
+## Problem 4: Hypergeometric 
+
+```{r}
+
+nurses <- 15
+non_nurses <- 15
+
+# Let nt be number of nurses sent to trip, n_nt number of non nurses sent to trip
+
+n <- 6 # total for the trip
+nt <- 5
+n_nt <- 1
+
+p <- round(dhyper(5, 15, 15, 6), 4)
+
+paste0("The probability the subordinate would have selected fives is ", p)
+
+# Let en be expected value for nurse, n_en expected value for non-nurses
+
+en <- n*(nurses/(nurses + non_nurses))
+
+n_en <- n*(non_nurses/ (nurses + non_nurses))
+
+paste0(" We would have expected the subordinate to send ", en, " nurses and ", n_en, " non-nurses" )
+
+
+
+```
+
+
+
+## Problem 5: Geometric distribution 
+
+```{r}
+
+p <- 0.001
+n <- 1200
+
+# For probability that the driver will be seriously injured during the course of the year,
+# I would consider it as a geometric distribution where x <= 1200 hours
+# in other word: During the course of year: continuously from 0 to 1200 hours
+# as compared to at 1200 hours which I would have used dgeom to find the probability
+
+a <- round(pgeom(n, p), 4)
+
+paste0("The probability that the driver will be seriously injured during the course of the year is ", a)
+
+
+# Same analogy but 15 months = 1500 hours
+n1 <- 1500
+
+a1 <- round(pgeom(n1, p), 4)
+
+paste0("The probability that the driver will be seriously injured during the course of 15 months is ", a1)
+
+```
+**Plotting my analysis**
+
+```{r}
+
+library(dplyr)
+library(ggplot2)
+
+data.frame(x = seq(0, 1500, 100), 
+           pmf = dgeom(x = seq(0, 1500, 100), prob = p),
+           cdf = pgeom(q = seq(0, 1500, 100), prob = p, lower.tail = TRUE)) %>%
+  mutate(Failures = ifelse(x <= n, n, "pass a year")) %>%
+  
+ggplot(aes(x = factor(x), y = cdf, fill = Failures)) +
+  geom_col() +
+  
+  geom_text(
+    aes(label = round(cdf,2), y = cdf + 0.01),
+    position = position_dodge(0.9),
+    size = 3,
+    vjust = 0
+  ) +
+  
+  labs( x = "Failures prior success", y = "probability", 
+        title = "Cumulative Probability to 1500 hours for faillure.") 
+
+
+
+
+
+```
+
+
+**Expected value**
+
+```{r}
+p <- 0.001
+n <- 1200
+
+u <- 1/p
+
+paste0("The expected number of hours that a driver will drive before being seriously injured is ", u)
+
+```
+
+**Conditional probability**
+
+Geometric distribution is one of the two memoryless distributions.
+Therefore, we have:
+
+```{r}
+# Using memoryless property, the 1200 hours don't affect the next 100 hours
+# In the next 100 hours, P(X<x) = P(X,100)
+
+n <- 100
+
+a <- round(pgeom(n, p), 4)
+
+paste0("The probability i ", a)
+
+
+```
+
+
+## Problem 6
+
+```{r}
+
+# Solve this problem as a binomial distribution
+# P(X>x)
+
+p = 0.001
+n <- 1000
+
+x <- 2
+
+prob <-round(1 - pbinom(x, n, p), 4) 
+
+paste0("the probability is ", prob)
+
+u <- n*p
+
+paste0("The expected value is ", u)
+
+
+# Using poisson distribution
+
+lambda <- 1
+
+p_g <- round(1- ppois(x, lambda), 4)
+p_g
+u_pg <- lambda
+u_pg
+
+```
+
+Both methods give us the same answer (very closer)
+
+
+## Problem 7
+
+```{r}
+lower <- 0
+upper <- 30
+
+fx <- 1 / (upper - lower) # base
+
+#a. Patient to wait more than 10 minutes, P(X>10)
+
+x <- 10
+prob10 <- round (fx * (upper - x), 4)
+
+paste0("Probability for a patient to wait more than 10 minutes is ", prob10)
+
+
+# The patient has already waited 10 minutes... P(X>5|X=10)
+
+ 
+x1 <- 10 # new starting point
+
+x <- x1 + 5 # Start waiting time
+
+fx1 <- 1 / (upper - x1)  # new base
+
+prob5 <- round((fx1 * (upper - x)), 4) # We can aslso use conditional probability formula
+
+paste0("Probability  is ", prob5)
+
+# Expected value
+
+exp_v <- (lower + upper) / 2
+
+paste0("The expected waiting time is ", exp_v)
+
+
+
+```
+
+
+
+## Problem 8
+
+```{r}
+u_exp <- 10 # expected value
+
+rate <- 1/ u_exp # rate
+
+# a. Expected failure time: exp_fail
+
+exp_fail <- 1 / rate  
+
+paste0("Expected failure time is ", exp_fail)
+
+
+# Standard deviation
+
+exp_std <- exp_fail
+
+paste0("The std is ", exp_fail)
+
+# More than 8 years P(x>8)
+
+x <- 8
+
+prob <- round(exp(-rate*x), 4) 
+
+paste0("The probability that my MRI will fail after 8 years is ", prob)
+
+# Exponential distribution has a memoryless property
+# The first 8 years don't affect the MRI as it didn't break
+# In the next two years = within two years = P(X<2)
+
+y <- 2
+
+prob2 <- round(1 - exp(-rate*y), 4) 
+
+paste0("The probability is ", prob2)
+
+
+
+```
