@@ -1,0 +1,754 @@
+---
+title: "Fundamentals of Computational Mathematics - Final Project"
+author: "Jered Ataky"
+date: "5/17/2021"
+output: 
+  html_document:
+  number_sections: yes
+  openintro::lab_report: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Problem 1
+
+**Generating random numbers...**
+
+```{r}
+
+# Set seed and define N, n
+
+
+N <- 6
+n <- 10000
+
+# Random uniform numbers
+
+X <- runif(n, 1, N)
+
+# Random normal numbers
+
+u <- (N + 1)/2
+
+Y <- rnorm(n, mean=u, sd = u)
+
+```
+
+
+Defining x and y...
+
+```{r}
+
+x <- quantile(X, 0.5)
+y <- quantile(Y, 0.25)
+
+```
+
+
+We are going to use the following probabilities formulas:
+
+
+P( A/B) =\frac{P( A\cap B)}{P( B)} ;\ P( A,B) \ =\ P( A) *P( B)
+
+
+
+
+a. 
+
+Let\ P( X >x|X >y) \ be\ p1
+
+
+
+```{r}
+
+p1 <- (length(X[X>x & X>y]) / n) / (length(X[X>y]) / n)
+
+paste0("The probability is: ", round(p1, 4))
+
+```
+
+
+b. 
+
+Let\ P( X >x,Y>y) \ be\ p2
+
+
+
+```{r}
+
+p2 <- (length(X[X>x]) / n) * (length(Y[Y>y]) / n)
+
+paste0("The probability is: ", round(p2, 4))
+
+```
+
+c.
+
+
+Let\ P( X <x| X>y) \ be\ p3
+
+
+
+```{r}
+
+p3 <- (length(X[X<x & X>y]) / n) / (length(X[X>y]) / n)
+
+paste0("The probability is: ", round(p3, 4))
+
+```
+
+
+
+Let\ investigate\ P( X >x\ and\ Y >y) \ =\ P( X >x) P( Y >y)
+
+
+
+**Building a probability table...**
+
+```{r}
+
+df <- data.frame(c(length(X[X<x])/n * length(Y[Y<y])/n, length(X[X<x])/n * length(Y[Y>y])/n),
+                c(length(X[X>x])/n * length(Y[Y<y])/n, length(X[X>x])/n * length(Y[Y>y])/n))
+                  
+                  
+
+colnames(df) <- c("X<x", "X>x")
+
+# Add the total colums
+
+df$total <- df$`X<x` + df$`X>x`
+
+# Add rows
+new_row <- c(sum(df$`X<x`), sum(df$`X>x`), sum(df$total))
+
+df1 <- rbind(df, new_row)
+
+rownames(df1) <- c("Y<y", "Y>y", "total")
+
+df1                   
+                      
+```
+
+
+From the table, we are going to evaluate the joint and marginal probabilities.
+
+
+Joint probability:
+
+```{r}
+
+joint_p <- df1[2,2]
+paste0("P(X>x and Y>y) is : ", joint_p )
+
+```
+
+
+
+Marginal probability:
+
+```{r}
+
+marginal_p <- df1[3,2]*df1[2,3]
+
+paste0("P(X>x)P(Y>y) is : ", marginal_p )
+
+
+```
+
+
+Let check now if  P(X>x and Y>y) = P(X>x)P(Y>y)
+
+```{r}
+
+joint_p==marginal_p
+
+```
+
+
+
+As proven above, we can conclude that  P(X>x and Y>y) = P(X>x)P(Y>y)
+
+
+
+**Fisher's Exact Test and Chi Square Test**
+
+Let build our matrix again
+
+```{r}
+gen_matrix <- matrix(c(length(X[X<x])/n * length(Y[Y<y])/n, length(X[X<x])/n * length(Y[Y>y])/n,
+                length(X[X>x])/n * length(Y[Y<y])/n, length(X[X>x])/n * length(Y[Y>y])/n), nrow = 2)
+```
+
+
+Fisher's Exact Test...
+
+```{r}
+
+
+fisher.test(gen_matrix*n)
+
+```
+
+
+Chi Square Test...
+
+```{r}
+
+chisq.test(gen_matrix*n)
+
+
+```
+
+
+
+Both the Fisher's Exact Test and Chi Square Test give us a p-value > 0.05,
+that's it, we fail to reject to the null hypothesis: The relative proportion of
+one variable are independent of the second variable. 
+
+Furthermore, the difference is that Fisher's Exact Test is used for a small sample size 
+and Chi Square Test is suitable for bigger sample size.
+
+That's said, It will be more appropriate to use
+Chi Square Test in this case where the sample size is bigger.
+
+
+## Problem 2
+
+
+Libraries
+
+```{r warning=FALSE, message=FALSE}
+
+library(tidyverse)
+library(corrplot)
+library(Hmisc)
+library(MASS)
+library(pracma)
+library(matrixcalc)
+library(fitdistrplus)
+library(Rmisc)
+library(funModeling)
+
+```
+
+
+Get the data
+
+```{r}
+
+data <- read.csv("https://raw.githubusercontent.com/jnataky/Computational_Mathematics/main/Assignments/train.csv")
+
+
+```
+
+
+### Descriptive and Inferential Statistics
+
+#### Explore data and get the insight
+
+```{r}
+
+glimpse(data)
+
+```
+
+
+#### Descriptive statistics: 
+
+We are going go skim the quantitative variables
+
+
+```{r}
+
+data %>%
+  select_if(is.numeric) %>%
+  skimr::skim()
+
+```
+
+
+We are going to consider few variables and study their distribution:
+SalePrice, YearBuilt, OverallQual,TotRmsAbvGrd, LotArea 
+
+
+#### Visualization 
+
+
+```{r}
+
+ggplot(data=data, aes(x=SalePrice)) +
+  geom_histogram( fill = 'magenta') +
+  labs(title = "Houses sale price distribution")
+
+```
+
+
+
+```{r}
+
+ggplot(data = data, aes(x=YearBuilt)) +
+  geom_histogram(fill = "blue") +
+  labs(x = "Year built", title = "Houses year built distribution ")
+
+```
+
+
+```{r}
+ggplot(data = data, aes(x=factor(OverallQual), y = SalePrice))+
+  geom_boxplot() +
+  labs(x ="Overall quality", title=" Houses sale price by Overall quality")
+
+
+```
+
+
+```{r}
+
+ggplot(data = data, aes(x=factor(TotRmsAbvGrd), y = SalePrice)) +
+  geom_boxplot() +
+  labs(x ="Rooms", title="Houses sale price by bedrooms ")
+
+```
+
+
+
+```{r}
+
+ggplot(data = data, aes(x=LotArea, y=SalePrice)) +
+  geom_point(color = "green") +
+  labs(x="Lot Area", title ="Sale price by lot area")  
+
+
+```
+
+
+
+```{r}
+
+ggplot(data = data, aes (x = YearBuilt, y=SalePrice)) +
+  geom_point(color = 'blue') +
+  labs(x='Year built', y='Sale price', title='Sale price over years')
+
+```
+
+
+#### Scatter plot matrix
+
+We are going to consider same variables for the scatter plot matrix.
+
+
+```{r}
+
+pairs(~SalePrice + YearBuilt + OverallQual + TotRmsAbvGrd + LotArea, 
+      data = data)
+
+
+```
+
+
+
+#### Correlation matrix
+
+We are going to consider three of our previous variables to build a
+correlation matrix
+
+```{r}
+
+data1 <- data %>%
+  dplyr::select(OverallQual, TotRmsAbvGrd, LotArea)
+
+res <- cor(data1)
+res
+
+
+``` 
+
+```{r}
+data1 %>%
+  cor() %>%
+  corrplot()
+
+```
+
+
+#### Testing the hypothesis
+
+##### Overall quality and Total rooms
+
+```{r}
+
+cor.test(data$OverallQual, data$TotRmsAbvGrd, conf.level = 0.80)
+
+
+```
+
+p_value less than 0.05: Reject the null hypothesis.
+
+We are 80% confident that the correlation is between 0.3996 and 0.4545
+
+
+
+##### Overall quality and Lot area
+
+
+```{r}
+cor.test(data$OverallQual, data$LotArea, conf.level = 0.80)
+
+
+
+```
+
+
+p_value less than 0.05: Reject the null hypothesis.
+
+We are 80% confident that the correlation is between 0.0725 and 0.1389
+
+
+
+##### Total rooms and Lot area
+
+```{r}
+cor.test(data$TotRmsAbvGrd, data$LotArea, conf.level = 0.80)
+
+```
+
+
+p_value less than 0.05: Reject the null hypothesis.
+
+We are 80% confident that the correlation is between 0.1575 and 0.2222
+
+
+In this case, as we are not performing multiple hypothesis test at once,
+I wouldn't worry much about familywise error. 
+I would consider each test as dependant and having the type error rate equal
+to the significance level of 0.05.
+
+
+### Linear Algebra and Correlation
+
+
+#### Precision matrix
+
+We are going o use ginv function from MASS package to invert
+the correlation matrix
+
+```{r}
+
+inv_res <-round(ginv(res), 3)
+inv_res
+
+```
+
+
+#### Multiply the correlation matrix by the precision matrix
+
+
+```{r}
+m1 <- round(res%*%inv_res,2)
+m1
+
+```
+
+
+#### Multiply the precision matrix by the correlation matrix
+
+```{r}
+m2 <- round(inv_res%*%res, 2)
+m2
+
+
+```
+
+
+#### LU decomposition on res
+
+lu.decomposition function from matrixcalc will be used here to conduct LU
+decomposition on the matrix.
+
+
+```{r}
+
+lu.decomposition(res)
+
+```
+
+
+### Calculus-Based Probability & Statistics
+
+
+#### Exploring First floor square feet variable
+
+```{r}
+
+ggplot(data = data, aes(x=X1stFlrSF)) +
+  geom_histogram(fill = 'gold', bins = 20) +
+  labs(title ='First floor square feet distribution' )
+
+
+
+```
+
+
+```{r}
+
+skimr::skim(data$X1stFlrSF)
+
+
+```
+
+
+#### Exponential probability density function
+
+```{r}
+
+x1_exp <-fitdistr(data$X1stFlrSF, densfun = 'exponential')
+
+lambda <- x1_exp$estimate
+lambda
+```
+
+
+#### Plotting histograms
+
+```{r}
+
+n <- 1000
+x1_exp_dist <- rexp(n, lambda)
+
+par(mfrow=c(1, 2))
+hist(x1_exp_dist, col = 'blue', main = 'Histogram with exp prob densfunc', xlab ='1st floor exp dist')
+hist(data$X1stFlrSF, col = 'gold', xlab = 'Fist floor sq', main='Histogram prior fitting exp funct')
+
+```
+
+The exponential probability density function transformed the first histogram 
+to a clean right skewed histogram where we can see at first glance its
+exponential distribution.
+
+
+#### Plotting the cumulative distribution 
+
+```{r}
+
+x1_exp_dist_cum <- plotdist(x1_exp_dist)
+
+```
+
+
+
+
+#### 5th and 95th percentile:
+
+```{r}
+quantile(x1_exp_dist, c(0.05, 0.95))
+
+```
+
+
+#### 95% Confidence interval of empirical data
+
+```{r Warning=FALSE,}
+
+CI(data$X1stFlrSF, ci = 0.95)
+
+
+```
+
+We are 95% percent that the mean of first floor sq of houses in Boston 
+falls in the interval (1142.780, 1182.473)
+
+
+5th and 95th percentile of empirical data
+
+```{r}
+
+quantile(data$X1stFlrSF, c(0.05, 0.95))
+
+```
+
+Regarding the houses first floor square ft from data collected,
+
+5% of first floor square ft is 672.95,
+The mean is between 1142.780 and 1182.473 with 95% of confidence
+and 95% is 1831.25
+
+As the distribution is right skewed, there is more houses with
+first floor square ft above the mean of 1162.627
+
+
+
+### Modeling
+
+To build our model, we are going to have few steps that would help us to build
+the model that would fit the data better. This will include for example finding some variables of interest, those are variables which would contribute significantly to our model.
+One thing to mention is that we are not going to be very deep in this process. 
+Elements such as optimization and tuning won't be within our scope for this stage.
+
+
+#### Variables of interest
+
+Build Build a correlation table to seek for some variables of interest
+
+```{r}
+
+correlation_table(data = data, target = "SalePrice")
+
+```
+
+
+
+As we can see, they are few variables that are highly correlated to the target,
+and we are going to consider those first while building our model.
+
+
+#### Model 1
+
+```{r}
+
+data1 <- data[, c('SalePrice', 'OverallQual','GrLivArea', 'GarageCars', 'TotalBsmtSF', 'X2ndFlrSF', 'LotArea', 'BedroomAbvGr', 'TotRmsAbvGrd', 'YearBuilt', 'YearRemodAdd', 'Neighborhood', 'HouseStyle')]
+
+```
+
+
+
+```{r}
+
+lm1 <- lm(SalePrice~., data = data1)
+
+summary(lm1)
+
+
+```
+
+
+
+#### Model 2: Stepwise
+
+```{r}
+
+lm2 <- step(lm1)
+
+```
+
+
+
+
+
+#### Residual analysis
+
+There are two conditions that we are going to be focus on here for residual analysis:
+Nearly normal residuals and linearity.
+
+**Nearly normal residuals**
+
+Let's plot an histogram...
+
+```{r}
+
+ggplot(data = lm1, aes(x = .resid)) +
+  geom_histogram()+
+  xlab("Residuals")
+
+
+```
+
+The histogram shows that the distribution is close to normal. 
+
+Or a normal probability plot of residuals...
+
+
+```{r}
+qqnorm(resid(lm1))
+qqline(resid(lm1))
+
+```
+
+
+As per Q-Q plot, the residuals distribution is also a bit normal. 
+
+
+**Linearity**
+
+```{r}
+
+ggplot(data = lm1, aes(x = .fitted, y = .resid)) +
+  geom_point()+
+  
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  xlab("Fitted values") +
+  ylab("Residuals")
+
+
+```
+
+
+
+As we look at on the graph, we can see that
+there is not a strong pattern in residuals and a linear model could fit the data
+but we will need to do more transformation
+
+
+#### Test the model
+
+
+We are goig to test our first model...
+
+```{r}
+
+test <- read.csv('https://raw.githubusercontent.com/jnataky/Computational_Mathematics/main/Assignments/test.csv')
+
+sale_pred <- predict(lm1, test)
+
+df_p <- data.frame(Id = test[, "Id"], SalePrice = sale_pred)
+
+df_p[df_p < 0] <- 0
+
+df_p <- replace(df_p, is.na(df_p), 0)
+
+head(df_p)
+```
+
+
+
+#### Kaggle results 
+
+Save the results to csv
+
+```{r}
+
+write.csv(df_p, "mypreds2_kaggle.csv", row.names = FALSE)
+```
+
+
+Kaggle results
+
+Username: jnataky
+
+Score: 0.46551
+
+
+As we mentioned earlier, we didn't optimize or tuning our model,
+doing so will help us to improve the model.
+
+Work to be continued...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,140 @@
+---
+title: "Fundamentals of Computational Mathematics - Homework 10"
+author: "Jered Ataky"
+date: "4/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question
+
+Smith is in jail and has 1 dollar; he can get out on bail if he has 8 dollars.
+A guard agrees to make a series of bets with him. If Smith bets A dollars,
+he wins A dollars with probability .4 and loses A dollars with probability .6.
+
+Find the probability that he wins 8 dollars before losing all of his money if
+
+(a) he bets 1 dollar each time (timid strategy).
+(b) he bets, each time, as much as possible but not more than necessary to
+bring his fortune up to 8 dollars (bold strategy).
+(c) Which strategy gives Smith the better chance of getting out of jail?
+
+## Solution
+
+### Part a
+
+Here, the Markov chain would represent Smith's money evolution.
+
+We can calculate it as:
+
+$$P_{j} \ =\ \frac{1-\left(\frac{q}{p}\right)^{j}}{1-\left(\frac{q}{p}\right)^{m}}$$
+
+```{r}
+p <- 0.4
+q <- 0.6
+j <- 1
+m <- 8
+
+for (i in j:m){
+  
+  prob <- round(((1 - (q/p)^i) / (1 - (q/p)^m)), 4)
+
+  print(paste0("For state ", i, ", the probability for timid srategy is ", prob)) 
+  
+}
+
+
+
+```
+
+We can see that the probability for smith with his 1 dollar is 0.0203
+
+**Or as we know the state is 1 we can simply calculate it directly:**
+
+```{r}
+p <- 0.4
+q <- 0.6
+
+j <- 1
+m <- 8
+
+prob <- round(((1 - (q/p)^j) / (1 - (q/p)^m)), 4)
+
+paste0("The probability for timid srategy is ", prob)
+
+
+```
+
+
+
+### Part b
+
+I am going to use 3 different methods in this part (just for practice):
+
+#### Trivial method
+
+Smith has 1 dollar, he must then win 3 times in a row.
+
+```{r}
+p <- 0.4
+n <- 3
+
+prob <- p^n
+
+paste0("The probability for bold strategy is ", prob)
+
+```
+
+
+#### Markov chain
+
+
+We should here be concerned about the output of 1, 2, 4, 8 dollars:
+
+```{r}
+
+gain_prob <- matrix(c(1, .6, .6, .6, 0, 0, 0, 0, 0, 0, 0, .4, 0, 0, 0, 0, 0, .4, 0, 0, 0, 0, 0, .4, 1), nrow = 5)
+gain_prob
+```
+
+Calculate the probability:
+
+```{r}
+init <- matrix(c(0, 1, 0, 0, 0), nrow = 1) # Initial state
+
+prob1 <- init %*% gain_prob
+prob2 <- prob1 %*% gain_prob
+prob3 <- prob2 %*% gain_prob
+
+
+paste0("The probability for bold strategy is ", prob3[5])
+
+```
+
+
+#### Binomial distribution
+
+Smith needs 3 successes for the 3 trials to double the money until reaching 8 dollars
+
+```{r}
+
+prob <- dbinom(n, n, p)
+
+paste0("The probability for bold strategy is ", prob)
+
+```
+
+
+
+### Part c
+
+The bold strategy gives Smith a better chance of getting out of jail.
+
+
+
+
+
+

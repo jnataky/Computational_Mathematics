@@ -1,0 +1,167 @@
+---
+title: "Fundamentals of Computational Mathematics - Homework 8"
+author: "Jered Ataky"
+date: "3/20/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 11 page 303
+
+A company buys 100 lightbulbs, each of which has an exponential lifetime of
+1000 hours. What is the expected time for the first of these bulbs to burn
+out? (See Exercise 10.)
+
+### Solution
+
+$$
+
+ \begin{array}{l}
+Let\ recall\ Exercise\ 10\ ( see\ page\ 303) :\\
+\\
+I\ am\ going\ to\ show\ that\ the\ density\ for\ M\ i\ exponential\ with\ mean\ \mu /n\ and\ then\ \\
+use\ it\ to\ solve\ Exercise\ 11\\
+\\
+P( min( X_{1} ,...,\ X_{n}  >x) \ =\ ( P( X_{1}  >x))^{n} \ \\
+=\left( e^{-\frac{x}{\mu }}\right)^{n} =e^{-\left(\frac{n}{\mu }\right) x}\\
+Finding\ the\ min\ of\ this\ function:\ p_{min}( x_{1} ,...,x_{n}) \ =\ \frac{n}{\mu } e^{-\left(\frac{n}{\mu }\right) x}\\
+\\
+It\ is\ an\ exponential\ density\ with\ mean\ \frac{\mu }{n} \ \ ( 1)\\
+\\
+Using\ ( 1) \ to\ solve\ exercise\ 10,\ we\ have:\\
+\\
+The\ expected\ time\ for\ the\ first\ of\ these\ bulbs\ to\ burn\ out\ is\ E( minX_{i}) \ =\ \frac{1000}{100} \ =\ 10.\\
+Thus\ the\ expected\ time\ is\ 10\ hours.\\
+\end{array}
+
+$$
+
+
+
+## Problem 14 page 303
+
+Assume that X1 and X2 are independent random variables, each having an
+exponential density with parameter λ. Show that Z = X1 − X2 has density
+fZ(z) = (1/2)λe−λ|z|
+
+
+
+
+### Solution
+
+$$
+
+ \begin{array}{l}
+X_{1} \ and\ X_{2} \ each\ having\ exponential\ density\ with\ parameter\ \lambda ,\ therefore:\\
+\\
+f_{X_{1}}( x) \ =\ f_{X_{2}}( x) =\ e^{\lambda x} \ if\ -\infty < x\leqslant 0;\ 0\ otherwise\ \ \\
+\\
+( see\ exercise\ 11for\ detail\ calculation\ on\ exponential\ density)\\
+\\
+\\
+Z\ =\ X_{1} \ -\ X_{2} \ =\ X_{1} \ +\ ( -X_{2})\\
+\ \ \ \  =\ X_{1} \ +\ X^{'}_{2} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \left( X^{'}_{2} \ =\ -X_{2}\right)\\
+\\
+Z\ =\ X_{1} +\ X^{'}_{2} \ \ will\ have\ a\ density:\\
+\\
+f_{z}( z) \ =\int ^{\infty }_{0} \lambda e^{-\lambda x} \lambda e^{-\lambda ( x_{1} -z)} dx_{1} \ \ \ \ \ \ \ \ \ ( Convolution\ formula)\\\\ \ \ \ \ \ \ \ \ \ \ 
+=\ \int ^{\infty }_{-\infty } \lambda ^{2} e^{-2\lambda x_{1}} e^{\lambda z} dx_{1} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\\ \
+\\
+\ \ \ \ \ \ \ \ \ \ =\int ^{\infty }_{-\infty } \lambda ^{2} e^{\lambda ( z-2x_{1})} dx_{1} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+\\
+This\ can\ be\ generalized\ as:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+f_{z}( z) \ =\ \int ^{\infty }_{0} e^{\lambda ( z-2x_{1})} dx_{1} \ =\ \frac{1}{2\lambda } e^{\lambda z} ,\ z< 0;\ \ \ \ \ \ \ \ \ \\\\\
+\ \ \ \ \ \ \ \ \  =\ \int ^{\infty }_{0} e^{\lambda ( z-2x_{1})} dx_{1} \ =\ \frac{1}{2\lambda } e^{\lambda z}\left( e^{-2\lambda z}\right) =\frac{1}{2\lambda } e^{-\lambda x} ,\ z\geqslant 0\ \ \ \ ( 2) \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+\\
+Thus,\ from\ ( 1) \ and\ ( 2) ,\ we\ have:\\
+\\
+f_{z}( z) \ =\frac{1}{2\lambda } e^{-\lambda |z|} \ \ \ \ \ \ \ \ \ \\
+\end{array}
+
+$$
+
+
+## Problem 1 page 330
+
+Let X be a continuous random variable with mean µ = 10 and variance
+σ2 = 100/3. Using Chebyshev’s Inequality, find an upper bound for the
+following probabilities.
+
+(a) P(|X − 10| ≥ 2).
+(b) P(|X − 10| ≥ 5).
+(c) P(|X − 10| ≥ 9).
+(d) P(|X − 10| ≥ 20).
+
+
+### Solution
+
+$$\ Let\ define\ Chebyshev’s\ Inequality:\ P( |X\ −\mu |\geqslant k\sigma ) \ \leqslant \frac{1}{k^{2}}\\$$
+
+```{r}
+sd <- sqrt(100/3)
+
+```
+
+
+(a) P(|X − 10| ≥ 2)
+
+```{r}
+
+mu <- 10
+k <- 2 / sd
+
+upper_bound <- round(1 / (k**2), 4)
+
+paste0("The upper bound is : ", upper_bound)
+```
+
+(b) P(|X − 10| ≥ 5).
+
+```{r}
+
+mu <- 10
+k <- 5 / sd
+
+upper_bound <- round(1 / (k**2), 4)
+
+paste0("The upper bound is : ", upper_bound)
+```
+
+(c) P(|X − 10| ≥ 9).
+
+```{r}
+
+mu <- 10
+k <- 9 / sd
+
+upper_bound <- round(1 / (k**2), 4)
+
+paste0("The upper bound is : ", upper_bound)
+```
+
+
+(d) P(|X − 10| ≥ 20).
+
+```{r}
+
+mu <- 10
+k <- 20 / sd
+
+upper_bound <- round(1 / (k**2), 4)
+
+paste0("The upper bound is : ", upper_bound)
+```
+
+```{r}
+library(matlib)
+
+
+
+```
+

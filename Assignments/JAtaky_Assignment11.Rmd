@@ -1,0 +1,216 @@
+---
+title: "Fundamentals of Computational Mathematics - Homework 8"
+author: "Jered Ataky"
+date: "3/20/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Libraries
+
+```{r}
+
+library(tidyverse)
+```
+
+
+
+## The data
+
+I am going to do the summary of the data...
+
+```{r}
+
+summary(cars)
+
+```
+
+
+## Visualize the data
+
+I'm going to visualize the data and see at first glance how it looks...
+
+
+
+```{r}
+
+plot(cars$speed, cars$dist, xlab = 'Speed (mph)', ylab = 'Stopping Distance (ft)',
+     main = 'Stopping distance Vs Speed')
+
+
+```
+
+We can see that the data appear to follow some linearity...
+
+
+Now let build the linear model
+
+
+## Model
+
+
+```{r}
+
+lin_model <- lm(cars$dist~cars$speed)
+summary(lin_model)
+
+```
+
+
+The correlation...
+
+```{r}
+
+cars %>%
+  summarise(cor(dist, speed, use = "complete.obs"))
+
+```
+
+
+
+We can write the linear regression as:
+
+dist = -17.5791 + 3.9324(speed)
+
+
+
+Let now visualize the model...
+
+```{r}
+
+plot(cars$speed, cars$dist, xlab = 'Speed (mph)', ylab = 'Stopping Distance (ft)',
+     main = 'Stopping distance Vs Speed')
+
+abline(lin_model, col='red')
+
+
+```
+
+
+
+## Quality evaluation
+
+There is also a fairly strong positive relationship between the stopping distance
+and the speed as the correlation coefficient is 0.8069 but the r squared is 0.6511
+meaning the model explains only 65.11 percent of data's variation.
+
+
+## Diagnostics: Residual analysis
+
+
+
+Let plot the residuals Vs Fitted Values...
+
+```{r}
+
+plot(lin_model$fitted.values, lin_model$residuals, xlab = 'Fitted Values', ylab = 'Residuals')
+
+abline(0,0, col='red')
+
+
+```
+
+
+There is not an apparent pattern in the residuals plots. This indicates there is a linear
+relationship between the two variables.
+
+Let check now the normality of the residuals wih he histogram and the QQ plot.
+
+
+Histogram...
+
+```{r}
+
+ggplot(data = cars, aes(x = lin_model$residuals)) + 
+  geom_histogram() +
+  xlab("Residuals")
+
+
+```
+
+
+
+Normal Q-Q plot
+
+
+```{r}
+
+qqnorm(lin_model$residuals)
+qqline(lin_model$residuals)
+
+```
+
+
+
+With the correlation coefficient of 0.8069, r square of 0.6511, and looking at 
+the above graphs, we can say that the linear model does a good job at explaining but
+the speed as the only variable is not enough. I'd say that considering other factors or 
+paremeters would make the model more robust.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

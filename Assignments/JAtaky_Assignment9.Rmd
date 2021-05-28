@@ -1,0 +1,164 @@
+---
+title: "Fundamental of Computational Mathematics - Homework 9"
+author: "Jered Ataky"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise 11 
+
+The price of one share of stock in the Pilsdorff Beer Company (see Exercise
+8.2.12) is given by Yn on the nth day of the year. Finn observes that
+the differences Xn = Yn+1 − Yn appear to be independent random variables
+with a common distribution having mean μ = 0 and variance $\sigma^{2}$ = 1/4. If
+Y1 = 100, estimate the probability that Y365 is
+
+
+```{r}
+# Given
+
+mu <- 0
+var_n <- 1/4
+y1 <- 100
+
+n <- 365 # From Y365
+
+```
+
+(a) $$Y_{365} \ \geqslant \ 100\ $$
+
+
+```{r}
+# Using pnorm to calculate the prop
+
+y <- 100
+
+prob <- round(1 - pnorm(q = y-y1, mean = 0, sd = sqrt(n*var_n)), 3)
+
+paste0("The probability is : ", prob)
+```
+
+(b) $$Y_{365} \ \geqslant \ 110\ $$
+
+
+```{r}
+# Using pnorm to calculate the prop
+
+y <- 110
+
+prob <- round(1 - pnorm(q = y-y1, mean = 0, sd = sqrt(n*var_n)), 3)
+
+paste0("The probability is : ", prob)
+```
+
+
+(c) $$Y_{365} \ \geqslant \ 120\ $$
+
+
+```{r}
+# Using pnorm to calculate the prop
+
+y <- 120
+
+prob <- round(1 - pnorm(q = y-y1, mean = 0, sd = sqrt(n*var_n)), 3)
+
+paste0("The probability is : ", prob)
+```
+
+
+## 2
+
+Calculate the expected value and variance of the binomial distribution using the moment
+generating function
+
+$$
+
+ \begin{array}{l}
+We\ know\ that\ for\ a\ n\ independent\ bernouilli\ trials\ with\ p\ as\ propability\ of\ success\ and\ \\
+1-p\ probabilty\ of\ faillure,\ the\ probability\ mass\ function\ is\ defined\ by\\
+f( x) \ =\ C( n,\ x) p^{x}( 1-p)^{n-x} .\\
+\\
+Using\ this\ probability\ mass\ function,\ we\ can\ find\ the\ moment\ generating\ function\\
+as\ M( t) \ =\ \sum ^{n}_{x\ =0} e^{tx} C( n,x) p^{x}( 1-p)^{n-x}\\
+\\
+M( t) \ =\ \sum ^{n}_{x\ =0} C( n,x)\left( pe^{t}\right)^{x}( 1-p)^{n-x}\\
+\\
+Using\ binomial\ formula:\ ( x+y)^{n} =\sum ^{n}_{k=0} \ C( n,x) x^{n} y^{n-k}\\
+\\
+We\ can\ simplify\ M( t) \ as:\ M( t) \ =\ \left[( 1-p) +pe^{t}\right]^{n}\\
+\\
+1.\ Expected\ value:\ To\ find\ the\ expected\ value,\ we\ need\ to\ calculate\ M'( 0) .\\
+\\
+M'( t) \ =\ n\left( pe^{t}\right)\left[( 1-p) +pe^{t}\right]^{n-1}\\
+\\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \Longrightarrow \ E( X) \ =\ M'( 0) \ =\ n\left( pe^{0}\right)\left[( 1-p) +pe^{0} \ \right]^{n} =\ np\ \ \ \ \ \ \\
+\\
+\\
+\ \ \ \ \ \ \ \ \ \ \ 2.\ Variance:\ To\ find\ the\ variance,\ we\ need\ to\ calculate\ M''( 0) -\ M^{'}( 0)^{2} .\ \ \ \ \ \ \ \ \ \ \ \\
+\\
+M''( t) =n( n-1)\left( pe^{t}\right)^{2}\left[( 1-p) +pe^{t}\right]^{n-2} +n\left( pe^{t}\right)\left[( 1-p) +pe^{t}\right]^{n-1}\\
+\\
+\ \ \ \ \ \ \Longrightarrow M''( 0) =\ n( n-1)\left( pe^{0}\right)^{2}\left[( 1-p) +pe^{0}\right]^{n-2} +n\left( pe^{0}\right)\left[( 1-p) +pe^{0}\right]^{n-1}\\
+\\
+\ \ \ \ \Longrightarrow \ M''( 0) \ =\ n( n-1) p^{2} +np\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Var( X) =\ \sigma ^{2} =M''( 0) -\ M^{'}( 0)^{2} =\ n( n-1) p^{2} +np-( np)^{2} \ =\ np( 1-p) \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\end{array}
+
+
+$$
+
+
+
+## 3
+
+Calculate the expected value and variance of the exponential distribution using the moment
+generating function.
+
+
+$$
+
+ \begin{array}{l}
+To\ find\ first\ the\ moment\ generating\ function,\ we\ are\ going\ to\ use\ X\sim Expo( \lambda ) \ \\
+and\ the\ PDF\ of\ exponential\ function\ defined\ as\ \lambda e^{-x\lambda }\\
+\\
+Thus,\ M( t) \ =\ E\left( e^{tx}\right) \ =\ \int ^{\infty }_{0} e^{tx} \lambda e^{-x\lambda } dx\\
+\\
+\ \ \ =\ \lambda \int ^{\infty }_{0} e^{-x( \lambda -t)} dx\\
+\\
+\ \ =\ \frac{\lambda }{\lambda -t} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+\\
+1.\ Expected\ value:\ To\ find\ the\ expected\ value,\ we\ need\ to\ calculate\ M'( 0)\\
+\\
+M'( t) \ =\ \left(\frac{\lambda }{\lambda -t} \ \right)^{'} =\frac{\lambda }{( \lambda -t)^{2}}\\
+\\
+E( X) \ =\ M'( 0) \ =\ \frac{\lambda }{\lambda ^{2}} \ =\frac{1}{\lambda } \ \ \ \\
+\\
+\\
+\ \ 2.\ Variance:\ To\ find\ the\ variance,\ we\ need\ to\ calculate\ M''( 0) -\ M^{'}( 0)^{2}\\
+\\
+M''( t) \ =\ \left(\frac{\lambda }{( \lambda -t)^{2}} \ \right)^{'} =\frac{2\lambda ( \lambda -t)}{( \lambda -t)^{4}} \ =\ \frac{2\lambda }{( \lambda -t)^{3}}\\
+\\
+\Longrightarrow \ M"( 0) \ =\ \frac{2}{\lambda ^{2}} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\\
+Var( X) \ =\sigma ^{2} =M''( 0) -\ M^{'}( 0)^{2} \ =\ \frac{2}{\lambda ^{2}} -\frac{1}{\lambda ^{2}} \ =\ \frac{1}{\lambda ^{2}} \ \ \ \ 
+\end{array}
+
+
+
+
+$$
+
+
+
+
+
+
+
+
+

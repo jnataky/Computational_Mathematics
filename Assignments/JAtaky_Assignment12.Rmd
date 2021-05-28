@@ -1,0 +1,328 @@
+---
+title: "Fundamentals of Computational Mathematics - Homework 12"
+author: "Jered Ataky"
+date: "4/24/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Libraries
+
+```{r}
+library(tidyverse)
+
+
+```
+
+
+## Introduction
+
+1. Provide a scatterplot of LifeExp~TotExp, and run simple linear regression. Do not transform the
+variables. Provide and interpret the F statistics, R^2, standard error,and p-values only. Discuss
+whether the assumptions of simple linear regression met.
+
+2. Raise life expectancy to the 4.6 power (i.e., LifeExp^4.6). Raise total expenditures to the 0.06
+power (nearly a log transform, TotExp^.06). Plot LifeExp^4.6 as a function of TotExp^.06, and r
+re-run the simple regression model using the transformed variables. Provide and interpret the F
+statistics, R^2, standard error, and p-values. Which model is "better?"
+
+3. Using the results from 3, forecast life expectancy when TotExp^.06 =1.5. Then forecast life
+expectancy when TotExp^.06=2.5.
+
+4. Build the following multiple regression model and interpret the F Statistics, R^2, standard error,
+and p-values. How good is the model?
+LifeExp = b0+b1 x PropMd + b2 x TotExp +b3 x PropMD x TotExp
+
+5. Forecast LifeExp when PropMD=.03 and TotExp = 14. Does this forecast seem realistic? Why
+or why not? 
+
+## Data Exploration
+
+```{r}
+
+raw_data <- read.csv('https://raw.githubusercontent.com/jnataky/Computational_Mathematics/main/Assignments/who.csv')
+
+glimpse(raw_data)
+
+```
+
+```{r}
+df <- raw_data
+
+```
+
+
+## 1. LifeExp~TotExp: Simple linear regression
+
+
+```{r}
+
+# Scatter plot
+df %>%
+  ggplot(aes(x = TotExp, y = LifeExp)) +
+  geom_point()
+
+
+```
+
+
+```{r}
+
+# Linear model
+
+df_lm <- lm(data = df, LifeExp~TotExp)
+summary(df_lm)
+
+
+```
+
+R square = 0.2577; The model explains 25.77% of variability of the response data (LifeExp) around its mean.
+rse = 9.371; spread is lower
+F-stat = 65.26 on 1 and 188 DF
+p-value = 7.714e-14; Reject the null hypothesis
+
+
+**Assumptions**
+
+
+Le take a look on each variable and its residuals...
+
+
+1. Normality 
+
+```{r}
+
+qqnorm(df_lm$residuals)
+qqline(df_lm$residuals)
+
+
+```
+
+
+Residuals are not nearly normal.
+
+
+2. Linearity
+
+The scatter plot will have to check the linearity...
+
+```{r}
+
+# Scatter plot
+df %>%
+  ggplot(aes(x = TotExp, y = LifeExp)) +
+  geom_point()
+
+
+```
+
+Looking at the above plot, we can say at first glace that the data don't look linear.
+
+
+
+3. Constant variability
+
+```{r}
+
+ggplot(data = df_lm, aes(x = .fitted, y = .resid)) +
+  geom_point()+
+  
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  xlab("Fitted values") +
+  ylab("Residuals")
+
+
+```
+
+
+The variability on the residuals is not constant.
+
+
+
+**At the end, we can say that the assumptions of simple linear regression are not met**
+
+
+## 2. Model transformed 
+
+```{r}
+
+# Transform the data
+
+df$LifeExp <- df$LifeExp**4.6
+df$TotExp <- df$TotExp**0.06
+
+```
+
+
+
+```{r}
+# Re-run the model
+
+df_lm2 <- lm(data = df, LifeExp~TotExp)
+summary(df_lm2)
+
+```
+
+
+
+R square = 0.7298; The model explains 72.98% of variability of the response data (LifeExp) around its mean.
+rse = 90490000; Larger deviation from the true regression line
+F-stat = 507.7 on 1 and 188 DF
+p-value = 2.2e-16; Reject the null hypothesis
+
+
+Visualize the new model...
+
+```{r}
+
+# Scatter plot
+df %>%
+  ggplot(aes(x = TotExp, y = LifeExp)) +
+  geom_point()
+
+
+```
+
+Residuals plot...
+
+```{r}
+
+qqnorm(df_lm2$residuals)
+qqline(df_lm2$residuals)
+
+
+```
+
+
+The residuals plot shows there is more constant variability and also comparing different parameters(r square, F-Stat), I would say that the transformed model is better then the previous one.
+
+
+## 3. Forecasting 
+
+From 2:
+
+LifeExp = -736527910 + (620060216)*(TotExp)
+
+```{r}
+
+TotExp2 <- 1.5
+LifeExp11 <- -736527910 + (620060216)*(TotExp2)
+
+paste0("Life expectancy when  TotExp^.06 = 1.5 is ", LifeExp11)
+
+TotExp4 <- 2.5
+LifeExp22 = -736527910 + (620060216)*(TotExp4)
+
+paste0("Life expectancy when  TotExp^.06 = 2.5 is ", LifeExp22)
+
+
+```
+
+Transforming back LifeExp = LifeExp^(1/4.6)...
+
+```{r}
+
+LifeExp21 <- round(LifeExp11**(1/4.6), 0)
+
+paste0("Life expectancy when  TotExp^.06 = 1.5 and  transorming back LifeExp is ", LifeExp21)
+
+
+LifeExp41 <- round(LifeExp22**(1/4.6), 0)
+
+paste0("Life expectancy when  TotExp^.06 = 1.5 and  transorming back LifeExp is ", LifeExp41)
+
+
+```
+
+
+## 4. Multiple regression model
+
+Transform back the data...
+
+```{r}
+
+# Transform the data
+
+df$LifeExp <- df$LifeExp**(1/4.6)
+df$TotExp <- df$TotExp**(1/0.06)
+
+```
+
+
+
+```{r}
+
+# Run the model
+
+df_lm3 <- lm(data = df, LifeExp~PropMD + TotExp + PropMD*TotExp)
+summary(df_lm3)
+
+```
+
+
+R square = 0.3574; The model explains 35.74% of variability of the response data (LifeExp) around its mean.
+rse = 8.765; Less deviation from the true regression line
+F-stat = 34.49 on 3 and 186 DF
+p-value = 2.2e-16; Reject the null hypothesis
+
+
+*Residuals analysis**
+
+
+```{r}
+
+qqnorm(df_lm3$residuals)
+qqline(df_lm3$residuals)
+
+
+```
+
+```{r}
+
+ggplot(data = df_lm3, aes(x = .fitted, y = .resid)) +
+  geom_point()+
+  
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  xlab("Fitted values") +
+  ylab("Residuals")
+
+
+```
+
+
+
+Looking at the plots, we can see that there is not constant variability,
+residuals are not really normal. Also we saw that r squared was small...
+With all of these, we can say that the model doesn't fit well the data.
+
+
+## 5. New forescating
+
+LifeExp = 6.277e+01 + (1.497e+03)(PropMD) + (7.233e-05)(TotExp) + (-6.026e-03)(PropMD)*(TotExp)
+
+```{r}
+
+PropMD <- 0.03
+TotExp <- 14
+
+LifeExp <- round(6.277e+01 + (1.497e+03)*(PropMD) + (7.233e-05)*(TotExp) + (-6.026e-03)*(PropMD)*(TotExp), 0)
+
+paste0("Life expectancy when PropMD = 0.3 and TotExp = 14 is ", LifeExp)
+
+```
+
+```{r}
+
+max(df$LifeExp)
+
+
+```
+
+The forecast does not seem realistic because per WHO the max LifeEXp is 83 years.
+108 years is way above the max
+
+
+

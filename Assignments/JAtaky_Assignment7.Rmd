@@ -1,0 +1,207 @@
+---
+title: "Fundamentals of Computational Mathematics - Homework 7"
+author: "Jered Ataky"
+date: "3/13/2021"
+output:
+  pdf_document: default
+  html_document:
+    number_sections: yes
+  openintro::lab_report: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1
+
+Let X1, X2, . . . , Xn be n mutually independent random variables, each of
+which is uniformly distributed on the integers from 1 to k. Let Y denote the
+minimum of the Xi’s. Find the distribution of Y .
+
+## Solution
+
+$$
+
+ \begin{array}{l}
+Y\ is\ the\ minimum\ of\ X_{i}\\
+\ Suppose\ that\ each\ X_{i} \ has\ k\ possibilities:\ 1,2,...,k\ \\
+\Longrightarrow \ total\ possible\ number\ of\ assignments\ for\ the\ entire\ collection\ of\ random\ \\
+variables\ X_{1} ,\ X_{2} ,...,X_{n} \ is\ k^{n} .\ Thus,\ k^{n} \ is\ the\ total\ number\ of\ options.\\
+Therefore,\ ( k-1)^{n} \ is\ the\ number\ of\ options\ where\ none\ of\ X_{i} \ are\ equal\ to\ 1.\\
+\\
+Let\ calculate\ the\ number\ of\ ways\ of\ getting\ Y:\\
+\\
+To\ get\ Y\ =\ 1,\ we\ will\ have\ k^{n} -( k-1)^{n} \ ways\\
+To\ get\ Y\ =\ 2,\ we\ will\ get\ k^{n} -( k-2)^{n} -\left[ k^{n} -( k-1)^{n}\right] \ =\ ( k-1)^{n} -( k-2)^{n}\\
+....\\
+\\
+In\ the\ same\ way,\ we\ can\ generalize\ it.\\
+So,\ to\ get\ Y=x,\ we\ will\ have\ ( k-x+1)^{n} -( k-x)^{n} \ ways\ to\ assign\ X_{1} ,\ X_{2} ,...,X_{n} \ \\
+so\ that\ the\ minimum\ value\ is\ j.\ \\
+\\
+We\ will\ need\ the\ to\ divide\ this\ number\ of\ ways\ by\ the\ total\ number\ of\ options\ to\ find\\
+the\ distribution\ of\ Y.\ \\
+\\
+Therefore,\ P( Y=x) \ =\ \frac{( k-x+1)^{n} -( k-x)^{n}}{k^{n}}
+\end{array}
+
+
+$$
+
+
+## Problem 2
+
+Your organization owns a copier (future lawyers, etc.) or MRI (future doctors).
+This machine has a manufacturer’s expected lifetime of 10 years. This means
+that we expect one failure every ten years. (Include the probability statements
+and R Code for each part.).
+
+
+a. What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as a geometric. (Hint: the probability is
+equivalent to not failing during the first 8 years..)
+
+## Solution
+
+```{r}
+
+exp <- 10 # expected value
+
+prob_exp <- 1 / exp   # Manufacturer's probability
+
+n <- 8 # number of years
+
+# Prob after 8 years
+
+prob <- round(1 - pgeom(n, prob_exp), 4)
+
+paste0("The probability that the machine will fail after 8 years is ", prob)
+
+exp_prob <- round(1 / prob_exp, 2)
+
+paste0("The expected value is ", exp_prob)
+
+# Expected value before first success
+
+
+std_prob <- round(sqrt(1-prob_exp) / prob_exp, 4)
+
+paste0("The standard deviation is ", std_prob)
+
+```
+
+
+
+b. What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as an exponential. 
+
+
+## Solution
+
+```{r}
+
+u_exp <- 10 # expected value
+
+rate <- 1/ u_exp # rate
+
+
+# Prob the machine will fail after 8 years P(x>8)
+
+x <- 8
+
+prob <- round(exp(-rate*x), 4) 
+
+paste0("The probability that my MRI will fail after 8 years is ", prob)
+
+# a. Expected value
+
+exp_v <- 1 / rate  
+
+paste0("Expected failure time is ", exp_v)
+
+
+# Standard deviation
+
+exp_std <- u_exp
+
+paste0("The std is ", exp_std)
+
+
+
+```
+
+
+
+c. What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as a binomial. (Hint: 0 success in 8
+years) 
+
+
+## Solution
+
+```{r}
+
+exp <- 10 # expected value
+n <- 8 
+x <- 0 # 0 success in 8 years
+
+prob_exp <- 1 / exp   # Manufacturer's probability
+
+prob <- round(pbinom(x, n, prob_exp), 4)
+
+paste0("The probability that my MRI will fail after 8 years is ", prob)
+
+# Expected value
+
+u <- n*prob_exp
+
+paste0("The expected value is ", u)
+
+# Standard deviation
+
+s <- round(sqrt(n*prob_exp*(1-prob_exp)), 4)
+
+paste0("The standard deviation is ", s)
+
+
+```
+
+d. What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as a Poisson. 
+
+
+## Solution
+
+
+```{r}
+
+t <- 10
+n <- 8 
+
+x <- 0
+
+lambda<- n / t
+
+# After 8 years
+
+prob <- round(ppois(x, lambda), 4)
+
+paste0("The probability that the machine will fail after 8 years is ", prob)
+
+# Expected value and std
+
+u <- lambda
+
+paste0("The expected value is ", u)
+
+s <- round(sqrt(lambda), 4)
+
+paste0("The standard deviation is ", s)
+
+
+
+```
+
+
+
